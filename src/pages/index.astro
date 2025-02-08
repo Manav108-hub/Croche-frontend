@@ -1,8 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { HomeContent } from '../components/home/HomeContent';
+import { AboutSection } from '../components/home/AboutSection';
+import { HeroSection } from '../components/home/HeroSection';
+import { FeaturesSection } from '../components/home/FeaturesSection';
+import { ContactSection } from '../components/home/ContactSection';
 ---
 
 <Layout title="Croche By Ameesha | Handmade with Love">
-  <HomeContent client:load />
+  <HeroSection client:load />
+  <FeaturesSection client:load />
+  <AboutSection client:load />
+  <ContactSection client:load />
 </Layout>

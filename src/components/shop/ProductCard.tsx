@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Product } from '../../types';
+import type { Product } from '../../types/product';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icons';
@@ -10,7 +10,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const minPrice = Math.min(...product.prices.map(p => p.value));
-  const mainImage = product.images[0]?.thumbnail;
+  const mainImage = product.images[0]?.url;
 
   return (
     <Card className="group h-full flex flex-col transform transition-transform hover:-translate-y-1">
@@ -30,9 +30,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           
           <div className="flex justify-between items-center gap-2">
             <div className="flex flex-wrap gap-1">
-              {product.prices.map((price) => (
+              {product.prices.map((price, index) => (
                 <span 
-                  key={price.id} 
+                  key={`${product.id}-${price.size}-${index}`}
                   className="capitalize text-sm text-gray-600"
                 >
                   {price.size}
@@ -48,7 +48,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       
       <Button 
         variant="primary"
-        className="w-full rounded-none flex items-center justify-center gap-2"
+        className="w-full rounded-none flex items-center justify-center gap-2 pacifico-regular"
       >
         <Icon name="shoppingCart" className="w-5 h-5" />
         Add to Cart

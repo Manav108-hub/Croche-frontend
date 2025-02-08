@@ -11,15 +11,23 @@ export default defineConfig({
   ],
   theme: {
     colors: {
-      primary: {
-        400: '#F687B3', // pink-400
-        500: '#ED64A6', // pink-500
-      },
-      gray: {
-        100: '#F7FAFC',
-        200: '#EDF2F7',
-        600: '#4A5568',
-      },
+      pink: {
+        50: '#FEE8DD',
+        100: '#F7D2CC',
+        200: '#F9BBBF',
+        300: '#EF9A9A',
+        400: '#FD8C91',
+        500: '#FB4EB4',
+        600: '#EF164F',
+        700: '#AD0E50',
+        800: '#B12051',
+        900: '#7A1D3A',
+
+        // Accent/Utility Pinks
+        primary: '#FB4EB4',
+        secondary: '#EF164F',
+        accent: '#FF9CF2',
+      }
     },
     fontSize: {
       'xl': '1.25rem',

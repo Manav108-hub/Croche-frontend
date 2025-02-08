@@ -1,6 +1,7 @@
 ---
 import Navbar from "../components/layout/Navbar"
-
+import '../assets/css/global.css';
+import Footer from "../components/layout/Footer";
 interface Props {
   title?: string;
   description?: string;
@@ -25,13 +26,13 @@ const {
   <body>
     <Navbar client:load />
     <slot />
+    <Footer client:load />
   </body>
 </html>
 
 <style>
   html,
   body {
-    margin: 0;
     width: 100%;
     height: 100%;
   }

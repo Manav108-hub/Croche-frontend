@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { auth } from "../../utils/auth";
+import Profile from "../../components/auth/UserProfile";
+
+if(!auth.isAuthenticated()) {
+  return Astro.redirect('/login');
+}
+
+const user = auth.getUser();
+if (!user) {
+  return Astro.redirect('/login');
+}
+---
+
+<Layout title={`${user.name}'s Profile`}>
+  <Profile client:load email={user.email} />
+</Layout>

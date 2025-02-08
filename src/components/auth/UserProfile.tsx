@@ -1,104 +1,227 @@
-// src/components/auth/UserProfile.tsx
-import { useEffect, useState } from 'react';
-import { api } from '../../utils/api';
-import type { User } from '../../types';
+import { useEffect, useState } from "react";
+import { authApi } from "../../utils/api";
+import { auth } from "../../utils/auth";
+import type { User, UpdateUserDetails } from "../../types/user";
 
-interface Props {
-  id: string;
+interface ProfileProps {
+  email: string;
 }
 
-export default function UserProfile({ id }: Props) {
+export default function Profile({ email }: ProfileProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<UpdateUserDetails>({
+    address: "",
+    city: "",
+    pincode: 0,
+    country: "",
+    phone: "",
+  });
 
   useEffect(() => {
-    const fetchUser = async () => {
+    async function fetchUser() {
       try {
-        const token = localStorage.getItem('authToken');
-        if (!token) throw new Error('Please login to view profile');
-
-        const userData = await api.getUserDetails(id, token);
+        const userData = await authApi.getUserByEmail(email);
         setUser(userData);
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Failed to fetch user';
-        setError(message);
-        console.error('API Error:', err);
+        if (userData.userDetails) {
+          setFormData(userData.userDetails);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load profile");
       } finally {
         setLoading(false);
       }
-    };
+    }
 
     fetchUser();
-  }, [id]);
+  }, [email]);
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-screen pt-28">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-pink-600"></div>
-    </div>
-  );
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "pincode" ? parseInt(value) || 0 : value,
+    }));
+  };
 
-  if (error) return (
-    <div className="text-center pt-28 px-4">
-      <div className="bg-pink-50 rounded-lg p-6 max-w-2xl mx-auto shadow-md">
-        <div className="text-pink-600 i-ph-warning-circle-fill text-4xl mb-4"></div>
-        <h2 className="text-2xl font-bold text-pink-800 mb-2">Error occurred</h2>
-        <p className="text-pink-700">{error}</p>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Update user details via API
+      await authApi.updateUserDetails(formData);
+
+      // Fetch updated user data
+      const updatedUser = await authApi.getUserByEmail(email);
+      setUser(updatedUser);
+
+      // Update user information in localStorage
+      auth.updateUser(updatedUser);
+
+      // Exit edit mode
+      setIsEditing(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update details");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-pink-500"></div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg">{error}</div>
+      </div>
+    );
+  }
 
   if (!user) return null;
 
   return (
-    <div className="pt-28 px-4 min-h-screen bg-pink-50">
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 transition-all hover:shadow-xl">
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-32 h-32 bg-pink-100 rounded-full flex items-center justify-center mb-6">
-            <span className="i-ph-user-circle-fill text-6xl text-pink-400"></span>
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="text-center mb-8">
+          <div className="w-24 h-24 bg-pink-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <span className="text-3xl">👤</span>
           </div>
-          <h1 className="text-3xl font-bold text-pink-800 mb-2">{user.name}'s Profile</h1>
-          <p className="text-pink-600 flex items-center gap-2">
-            <span className="i-ph-envelope-simple-fill"></span>
-            {user.email}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+          <p className="text-gray-600">{user.email}</p>
         </div>
 
-        {user.userDetails && (
-          <div className="space-y-6">
-            <div className="space-y-4 border-t border-pink-100 pt-6">
-              {user.userDetails.address && (
-                <div className="flex items-center gap-4 text-pink-700">
-                  <span className="i-ph-map-pin-fill text-xl text-pink-500"></span>
-                  <p>{user.userDetails.address}</p>
-                </div>
-              )}
+        {!user.userDetails && !isEditing ? (
+          <div className="text-center py-4">
+            <p className="text-gray-600 mb-4">Please complete your profile</p>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600"
+            >
+              Add Details
+            </button>
+          </div>
+        ) : isEditing ? (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Address</label>
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-              {user.userDetails.city && (
-                <div className="flex items-center gap-4 text-pink-700">
-                  <span className="i-ph-buildings-fill text-xl text-pink-500"></span>
-                  <p>{user.userDetails.city}</p>
-                </div>
-              )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">City</label>
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-              {/* Update other fields similarly */}
-              {user.userDetails.country && (
-                <div className="flex items-center gap-4 text-pink-700">
-                  <span className="i-ph-globe-hemisphere-east-fill text-xl text-pink-500"></span>
-                  <p>{user.userDetails.country}</p>
-                </div>
-              )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Pincode</label>
+              <input
+                type="number"
+                name="pincode"
+                value={formData.pincode}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                required
+              />
+            </div>
 
-              {user.userDetails.phone && (
-                <div className="flex items-center gap-4 text-pink-700">
-                  <span className="i-ph-phone-fill text-xl text-pink-500"></span>
-                  <p>{user.userDetails.phone}</p>
-                </div>
-              )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Country</label>
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500"
+                required
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600"
+              >
+                Save Details
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="space-y-4 border-t pt-6">
+            <div className="flex justify-end">
+              <button
+                onClick={() => setIsEditing(true)}
+                className="text-pink-500 hover:text-pink-600"
+              >
+                Edit Details
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📍</span>
+                <span>{user.userDetails?.address}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🏢</span>
+                <span>{user.userDetails?.city}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🌍</span>
+                <span>{user.userDetails?.country}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📞</span>
+                <span>{user.userDetails?.phone}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📮</span>
+                <span>{user.userDetails?.pincode}</span>
+              </div>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

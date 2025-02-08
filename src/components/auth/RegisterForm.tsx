@@ -1,142 +1,92 @@
-import React, { useState } from 'react';
-import { api } from '../../utils/api';
-import type { RegisterData, UserDetails } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { authApi } from '../../utils/api';
+import type { RegisterInput } from '../../types/auth';
 
-// Define form field types
-type FormField = {
-  name: string;
-  label: string;
-  type: string;
-  pattern?: string;
-  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
-};
+interface FormData extends RegisterInput {
+  confirmPassword: string;
+}
+
+interface PasswordValidation {
+  hasMinLength: boolean;
+  hasUpperCase: boolean;
+  hasLowerCase: boolean;
+  hasNumber: boolean;
+  hasSpecialChar: boolean;
+  passwordsMatch: boolean;
+}
 
 const RegisterForm = () => {
-  // Define form state type
-  type FormDataType = {
-    name: string;
-    email: string;
-    password: string;
-    details: {
-      address: string;
-      city: string;
-      pincode: string;
-      country: string;
-      phone: string;
-    };
-  };
-
-  const [formData, setFormData] = useState<FormDataType>({
-    name: "",
-    email: "",
-    password: "",
-    details: {
-      address: "",
-      city: "",
-      pincode: "",
-      country: "",
-      phone: ""
-    }
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  
+  const [validation, setValidation] = useState<PasswordValidation>({
+    hasMinLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+    passwordsMatch: false
   });
   
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    // Update password validation in real-time
+    const { password, confirmPassword } = formData;
+    
+    setValidation({
+      hasMinLength: password.length >= 8,
+      hasUpperCase: /[A-Z]/.test(password),
+      hasLowerCase: /[a-z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+      passwordsMatch: password === confirmPassword && password !== ''
+    });
+  }, [formData.password, formData.confirmPassword]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'name' || name === 'email' || name === 'password') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        details: {
-          ...prev.details,
-          [name]: value
-        }
-      }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const isPasswordValid = () => {
+    return Object.values(validation).every(Boolean);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!isPasswordValid()) {
+      setError('Please meet all password requirements');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
     try {
-      // Transform formData to match RegisterData type
-      const submissionData: RegisterData = {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        details: {
-          address: formData.details.address || undefined,
-          city: formData.details.city || undefined,
-          country: formData.details.country || undefined,
-          phone: formData.details.phone || undefined,
-          pincode: formData.details.pincode ? parseInt(formData.details.pincode) : undefined
-        }
-      };
-
-      // Remove empty optional fields
-      if (submissionData.details) {
-        Object.entries(submissionData.details).forEach(([key, value]) => {
-          if (!value) {
-            delete submissionData.details![key as keyof UserDetails];
-          }
-        });
-
-        // Remove details object if empty
-        if (Object.keys(submissionData.details).length === 0) {
-          delete submissionData.details;
-        }
-      }
-
-      await api.register(submissionData);
+      const { confirmPassword, ...registerData } = formData;
+      await authApi.register(registerData);
       window.location.href = '/login';
     } catch (err) {
-      if (err instanceof Error) {
-        if (err.message.includes('Invalid value provided. Expected Int')) {
-          setError('Please enter a valid pincode (numbers only)');
-        } else {
-          setError(err.message);
-        }
-      } else {
-        setError('Registration failed');
-      }
+      setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
-  // Field configurations
-  const requiredFields: FormField[] = [
-    { name: 'name', label: 'Name', type: 'text' },
-    { name: 'email', label: 'Email', type: 'email' },
-    { name: 'password', label: 'Password', type: 'password' }
-  ];
-
-  const optionalFields: FormField[] = [
-    { name: 'address', label: 'Address', type: 'text' },
-    { name: 'city', label: 'City', type: 'text' },
-    { 
-      name: 'pincode', 
-      label: 'Pincode', 
-      type: 'text', 
-      pattern: '[0-9]*', 
-      inputMode: 'numeric' 
-    },
-    { name: 'country', label: 'Country', type: 'text' },
-    { name: 'phone', label: 'Phone', type: 'tel' }
-  ];
+  const getValidationColor = (isValid: boolean) => 
+    isValid ? 'text-green-500' : 'text-gray-400';
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 py-8">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md mx-4">
-        <h2 className="text-2xl font-bold text-center text-pink-500 mb-4">
+        <h2 className="text-2xl pacifico-bold text-center text-pink-500 mb-4">
           Register
         </h2>
         
@@ -147,60 +97,97 @@ const RegisterForm = () => {
         )}
         
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Required Fields */}
-          {requiredFields.map(field => (
-            <div key={field.name}>
-              <label 
-                className="block text-sm font-semibold mb-1" 
-                htmlFor={field.name}
-              >
-                {field.label}
-              </label>
-              <input
-                type={field.type}
-                id={field.name}
-                name={field.name}
-                value={formData.details[field.name as keyof FormDataType['details']]}
-                onChange={handleChange}
-                placeholder={`Enter your ${field.label.toLowerCase()}`}
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                required
-              />
-            </div>
-          ))}
+          <div>
+            <label className="block text-sm font-semibold mb-1" htmlFor="name">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              required
+            />
+          </div>
 
-          {/* Optional Details Fields */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Additional Details (Optional)
-            </h3>
-            {optionalFields.map(field => (
-              <div key={field.name} className="mb-4">
-                <label 
-                  className="block text-sm font-semibold mb-1" 
-                  htmlFor={field.name}
-                >
-                  {field.label}
-                </label>
-                <input
-                  type={field.type}
-                  id={field.name}
-                  name={field.name}
-                  pattern={field.pattern}
-                  inputMode={field.inputMode}
-                  value={formData.details[field.name as keyof typeof formData.details]}
-                  onChange={handleChange}
-                  placeholder={`Enter your ${field.label.toLowerCase()}`}
-                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                />
-              </div>
-            ))}
+          <div>
+            <label className="block text-sm font-semibold mb-1" htmlFor="email">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1" htmlFor="password">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter your password"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-1" htmlFor="confirmPassword">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          {/* Password Requirements */}
+          <div className="text-sm space-y-1 bg-gray-50 p-3 rounded">
+            <h3 className="font-semibold mb-2">Password Requirements:</h3>
+            <p className={getValidationColor(validation.hasMinLength)}>
+              ✓ At least 8 characters
+            </p>
+            <p className={getValidationColor(validation.hasUpperCase)}>
+              ✓ At least one uppercase letter
+            </p>
+            <p className={getValidationColor(validation.hasLowerCase)}>
+              ✓ At least one lowercase letter
+            </p>
+            <p className={getValidationColor(validation.hasNumber)}>
+              ✓ At least one number
+            </p>
+            <p className={getValidationColor(validation.hasSpecialChar)}>
+              ✓ At least one special character
+            </p>
+            <p className={getValidationColor(validation.passwordsMatch)}>
+              ✓ Passwords match
+            </p>
           </div>
 
           <button 
             type="submit" 
-            className="w-full px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50"
-            disabled={loading}
+            className="w-full px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors disabled:opacity-50 pacifico-regular"
+            disabled={loading || !isPasswordValid()}
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -216,7 +203,7 @@ const RegisterForm = () => {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           Already have an account?{' '}
-          <a href="/login" className="text-pink-500 hover:underline">
+          <a href="/login" className="text-pink-500 pacifico-regular hover:underline">
             Login
           </a>
         </p>

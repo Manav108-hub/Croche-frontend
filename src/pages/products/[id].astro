@@ -1,8 +1,7 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import ProductDetails from '../../components/shop/ProductDetails';
-import { api } from '../../utils/api';
-import type { Product } from '../../types';
+import Layout from "../../layouts/Layout.astro";
+import ProductDetails from "../../components/shop/ProductDetails";
+import { authApi } from '../../utils/api';
 
 const { id } = Astro.params;
 
@@ -13,19 +12,17 @@ if (!id) {
   });
 }
 
-// Fetch product data
 let product;
 try {
-  const response = await api.getProduct(id);
-  product = response.product;
+  product = await authApi.getProduct(id);
 } catch (error) {
   return new Response(null, {
     status: 404,
-    statusText: 'Product Not Found'
+    statusText: 'Not Found'
   });
 }
 ---
 
-<Layout>
+<Layout title={product.name}>
   <ProductDetails product={product} client:load />
 </Layout>

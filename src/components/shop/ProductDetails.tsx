@@ -1,12 +1,11 @@
 import { Button } from '../ui/Button';
-import type { Product, ProductImage, ProductPrice } from '../../types';
+import type { Product } from '../../types/product';
 
 interface ProductDetailsProps {
-  product: Product; // Now guaranteed to have prices from getProduct
+  product: Product;
 }
 
 const ProductDetails = ({ product }: ProductDetailsProps) => {
-  // Prices are now guaranteed to exist from getProduct endpoint
   const prices = product.prices;
   const minPrice = Math.min(...prices.map(p => p.value));
   const mainImage = product.images[0]?.url;
@@ -33,7 +32,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                   className="aspect-square bg-gray-100 rounded overflow-hidden"
                 >
                   <img
-                    src={image.thumbnail || '/placeholder-thumbnail.jpg'}
+                    src={image.url}
                     alt=""
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -57,9 +56,9 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Available Sizes</h3>
             <div className="flex gap-2 flex-wrap">
-              {prices.map((price) => (
+              {prices.map((price, index) => (
                 <Button
-                  key={price.id}
+                  key={`${product.id}-${price.size}-${index}`}
                   variant="outline"
                   className="capitalize"
                 >
