@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chewy&family=Sacramento&display=swap');
 
 /* DM Sans Font */
 .dm-sans-regular {
@@ -40,5 +41,11 @@
   .pacifico-bold {
     font-family: "Pacifico", cursive; /* Use 'cursive' as fallback */
     font-weight: 700;
+    font-style: normal;
+  }
+
+  .chewy-regular {
+    font-family: "Chewy", serif;
+    font-weight: 400;
     font-style: normal;
   }

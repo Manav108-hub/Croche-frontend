@@ -84,7 +84,7 @@ const RegisterForm = () => {
     isValid ? 'text-green-500' : 'text-gray-400';
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-8">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 py-8 mt-3rem">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md mx-4">
         <h2 className="text-2xl pacifico-bold text-center text-pink-500 mb-4">
           Register
