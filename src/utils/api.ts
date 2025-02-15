@@ -2,7 +2,7 @@ import type { LoginInput, RegisterInput, AuthResponse } from "../types/auth";
 import type { Product } from "../types/product";
 import type { User, UpdateUserDetails } from "../types/user";
 
-const GRAPHQL_URL = 'https://croche-backend.onrender.com/graphql';
+const GRAPHQL_URL = 'https://croche-backend-production.up.railway.app/graphql';
 
 const LOGIN_MUTATION = `
   mutation Login($input: LoginInput!) {
