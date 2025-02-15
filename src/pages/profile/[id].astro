@@ -1,0 +1,36 @@
+---
+// src/pages/profile/[id].astro
+import Profile from "../../components/auth/UserProfile";
+import Layout from "../../layouts/Layout.astro";
+import { auth } from "../../utils/auth";
+import type { User } from "../../types/user";
+
+// Extract the `id` parameter from the URL
+const { id } = Astro.params;
+
+// Initialize `currentUser` as null
+let currentUser: User | null = null;
+
+if (typeof window !== "undefined") {
+  // Client-side authentication check
+  if (!auth.isAuthenticated()) {
+    // Redirect to login page if not authenticatedra
+    window.location.href = '/login';
+    return;
+  }
+
+  // Get the current user
+  currentUser = auth.getUser();
+
+  // Validate the `id` parameter and ensure it matches the logged-in user's ID
+  if (!currentUser || !id || currentUser.id !== id) {
+    // Redirect to login or another appropriate page if validation fails
+    window.location.href = '/login';
+    return;
+  }
+}
+---
+<Layout title={`${currentUser?.name || 'User'}'s Profile`}>
+  {/* Render the Profile component only if `id` is valid */}
+  {id && <Profile client:load userId={id} />}
+</Layout>

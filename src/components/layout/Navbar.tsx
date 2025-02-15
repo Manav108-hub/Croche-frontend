@@ -35,8 +35,8 @@ const FlowerImage: React.FC<DecorativeProps> = ({ top, left, transform, imageInd
 };
 
 type UserData = {
-  name: string;
   id: string;
+  name: string;
   email: string;
 };
 
@@ -51,11 +51,7 @@ const Navbar = () => {
     imageIndex: number;
   }> | null>(null);
 
-  const itemCount = 0;
-  const cartTotal = 0;
-
   useEffect(() => {
-    // Generate random positions only on the client
     const positions = [...Array(6)].map((_, i) => ({
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
@@ -68,14 +64,17 @@ const Navbar = () => {
   useEffect(() => {
     const checkAuthStatus = () => {
       try {
-        // Only access localStorage when window is defined
         if (typeof window !== "undefined") {
           const token = localStorage.getItem("authToken");
           const userStr = localStorage.getItem("user");
           if (token && userStr) {
             const user = JSON.parse(userStr);
             setIsLoggedIn(true);
-            setUserData(user);
+            setUserData({
+              id: user.id,
+              name: user.name,
+              email: user.email
+            });
           } else {
             setIsLoggedIn(false);
             setUserData(null);
@@ -88,7 +87,6 @@ const Navbar = () => {
       }
     };
 
-    // Only add event listener on client side
     if (typeof window !== "undefined") {
       checkAuthStatus();
       window.addEventListener("auth-change", checkAuthStatus);
@@ -117,7 +115,6 @@ const Navbar = () => {
       className="bg-white/95 backdrop-blur-sm shadow-md fixed w-full top-0 z-50"
     >
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Decorative Flowers */}
         {flowerPositions?.map((pos, i) => (
           <FlowerImage
             key={`flower-${i}`}
@@ -129,13 +126,11 @@ const Navbar = () => {
         ))}
 
         <div className="flex justify-between items-center h-16">
-          {/* Mobile Menu Button and Brand Logo */}
           <div className="flex items-center flex-1 sm:flex-none">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={toggleMenu}
               className="sm:hidden p-2 focus:outline-none"
-              aria-label="Toggle navigation menu"
             >
               <AnimatePresence mode="wait">
                 {isMenuOpen ? (
@@ -169,7 +164,6 @@ const Navbar = () => {
             </motion.a>
           </div>
 
-          {/* Desktop Navigation Links */}
           <div className="hidden sm:flex items-center space-x-8">
             {["Shop", "About", "Contact"].map((item) => (
               <motion.a
@@ -183,13 +177,12 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* User, Cart, and Auth Buttons */}
           <div className="flex items-center space-x-4">
             {isLoggedIn && userData ? (
               <>
                 <motion.a
                   whileHover={{ scale: 1.05 }}
-                  href={`/profile/${encodeURIComponent(userData.name.toLowerCase().replace(/\s+/g, '-'))}`}
+                  href={`/profile/${userData.id}`}
                   className="hidden sm:flex items-center text-gray-600 hover:text-pink-400 transition-colors"
                 >
                   <Icon name="user" className="h-5 w-5 mr-1" />
@@ -224,17 +217,7 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* Cart Section */}
             <div className="flex items-center">
-              {cartTotal > 0 && (
-                <motion.span
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="hidden sm:block text-gray-600 mr-2"
-                >
-                  ₹{cartTotal.toFixed(2)}
-                </motion.span>
-              )}
               <motion.a
                 whileHover={{ scale: 1.1 }}
                 href="/cart"
@@ -244,21 +227,11 @@ const Navbar = () => {
                   name="shoppingCart"
                   className="h-6 w-6 text-gray-600 hover:text-pink-400 transition-colors"
                 />
-                {itemCount > 0 && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 bg-pink-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                  >
-                    {itemCount}
-                  </motion.span>
-                )}
               </motion.a>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu Overlay */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
@@ -285,7 +258,7 @@ const Navbar = () => {
                     <>
                       <motion.a
                         whileHover={{ scale: 1.05, x: 10 }}
-                        href={`/profile/${encodeURIComponent(userData.name.toLowerCase().replace(/\s+/g, '-'))}`}
+                        href={`/profile/${userData.id}`}
                         className="block py-2 text-gray-600 hover:text-pink-400 transition-colors"
                       >
                         Profile

@@ -1,12 +1,11 @@
 export interface User {
-    id: string;
+    id: string;       // Use only one ID field
     name: string;
     email: string;
     isAdmin: boolean;
-    createdAt: string;
+    createdAt: string; // Keep as string for client
     updatedAt: string;
-}
-
+  }
 export interface LoginInput {
     email: string;
     password: string;

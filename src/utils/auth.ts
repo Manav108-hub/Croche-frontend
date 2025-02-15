@@ -10,7 +10,7 @@ export const auth = {
     if (typeof window === 'undefined') return null;
     const userData = localStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
-  },
+},
 
   login(token: string, user: User): void {
     if (typeof window === 'undefined') return;

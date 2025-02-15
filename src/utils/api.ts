@@ -97,6 +97,27 @@ const GET_USER_QUERY = `
   }
 `;
 
+const GET_USER_BY_ID_QUERY = `
+  query UserById($userId: String!) {
+    userById(id: $userId) {
+      id
+      name
+      email
+      isAdmin
+      createdAt
+      updatedAt
+      userDetails {
+        id
+        address
+        city
+        pincode
+        country
+        phone
+      }
+    }
+  }
+`;
+
 const UPDATE_USER_DETAILS_MUTATION = `
   mutation UpdateUserDetails($input: UpdateUserDetailsInput!) {
     updateUserDetails(input: $input) {
@@ -189,6 +210,15 @@ export const authApi = {
       true
     );
     return data.userByEmail;
+  },
+
+  async getUserById(userId: string): Promise<User> {
+    const data = await graphqlRequest<{ userById: User }>(
+      GET_USER_BY_ID_QUERY,
+      { userId },
+      true
+    );
+    return data.userById;
   },
 
   async updateUserDetails(input: UpdateUserDetails): Promise<UpdateUserDetails> {
