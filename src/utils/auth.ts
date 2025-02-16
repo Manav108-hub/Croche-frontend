@@ -15,16 +15,23 @@ export const auth = {
   },
 
   login(token: string, user: User): void {
-    // Set secure httpOnly cookies via backend
-    // Frontend only stores minimal user data
+    // For development, set the token as a regular cookie so it's visible
+    Cookies.set(TOKEN_NAME, token, {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Change to 'lax' for development
+      expires: 7,
+      path: '/'
+    });
+
+    // Store user data
     Cookies.set(USER_DATA, JSON.stringify({
       id: user.id,
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin
     }), {
-      secure: true,
-      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax', // Change to 'lax' for development
       expires: 7,
       path: '/'
     });
@@ -48,8 +55,8 @@ export const auth = {
     if (currentUser) {
       const newUser = { ...currentUser, ...updatedUser };
       Cookies.set(USER_DATA, JSON.stringify(newUser), {
-        secure: true,
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax', // Change to 'lax' for development
         expires: 7,
         path: '/'
       });

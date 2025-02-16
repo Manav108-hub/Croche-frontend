@@ -23,7 +23,7 @@ export default function UserProfile({ userId }: ProfileProps) {
   useEffect(() => {
     async function fetchUser() {
       if(!userId) return;
-      
+
       try {
         const userData = await authApi.getUserById(userId);
         setUser(userData);
@@ -87,7 +87,7 @@ export default function UserProfile({ userId }: ProfileProps) {
   if (!user) return null;
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className="max-w-2xl mx-auto px-6 pb-6 pt-24">
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="text-center mb-8">
           <div className="w-24 h-24 bg-pink-100 rounded-full mx-auto mb-4 flex items-center justify-center">

@@ -1,6 +1,7 @@
 import type { LoginInput, RegisterInput, AuthResponse } from "../types/auth";
 import type { Product } from "../types/product";
 import type { User, UpdateUserDetails } from "../types/user";
+import Cookies from 'js-cookie';
 
 const GRAPHQL_URL = 'https://croche-backend-production.up.railway.app/graphql';
 
@@ -131,15 +132,29 @@ const UPDATE_USER_DETAILS_MUTATION = `
   }
 `;
 
-async function graphqlRequest<T>(query: string, variables: Record<string, any>): Promise<T> {
+async function graphqlRequest<T>(
+  query: string, 
+  variables: Record<string, any>, 
+  requireAuth: boolean = false
+): Promise<T> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'apollo-require-preflight': 'true'
+  };
+
+  if (requireAuth) {
+    const token = Cookies.get('auth_token');
+    if (!token) {
+      throw new Error('Authentication required');
+    }
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const response = await fetch(GRAPHQL_URL, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'apollo-require-preflight': 'true'
-    },
-    credentials: 'include', // Always include credentials
+    headers,
+    credentials: 'include',
     body: JSON.stringify({
       query,
       variables,
@@ -160,7 +175,8 @@ export const authApi = {
   async login(credentials: LoginInput): Promise<AuthResponse> {
     const data = await graphqlRequest<{ login: AuthResponse }>(
       LOGIN_MUTATION,
-      { input: credentials }
+      { input: credentials },
+      false
     );
     return data.login;
   },
@@ -168,7 +184,8 @@ export const authApi = {
   async register(userData: RegisterInput): Promise<AuthResponse> {
     const data = await graphqlRequest<{ register: AuthResponse }>(
       REGISTER_MUTATION,
-      { input: userData }
+      { input: userData },
+      false
     );
     return data.register;
   },
@@ -177,7 +194,8 @@ export const authApi = {
   async getProducts(): Promise<Product[]> {
     const data = await graphqlRequest<{ products: Product[] }>(
       GET_PRODUCTS_QUERY,
-      {}
+      {},
+      false
     );
     return data.products;
   },
@@ -185,7 +203,8 @@ export const authApi = {
   async getProduct(id: string): Promise<Product> {
     const data = await graphqlRequest<{ product: Product }>(
       GET_PRODUCT_QUERY,
-      { id }
+      { id },
+      false
     );
     return data.product;
   },
@@ -194,7 +213,8 @@ export const authApi = {
   async getUserByEmail(email: string): Promise<User> {
     const data = await graphqlRequest<{ userByEmail: User }>(
       GET_USER_QUERY,
-      { email }
+      { email },
+      true
     );
     return data.userByEmail;
   },
@@ -202,7 +222,8 @@ export const authApi = {
   async getUserById(userId: string): Promise<User> {
     const data = await graphqlRequest<{ userById: User }>(
       GET_USER_BY_ID_QUERY,
-      { userId }
+      { userId },
+      true
     );
     return data.userById;
   },
@@ -210,7 +231,8 @@ export const authApi = {
   async updateUserDetails(input: UpdateUserDetails): Promise<UpdateUserDetails> {
     const data = await graphqlRequest<{ updateUserDetails: UpdateUserDetails }>(
       UPDATE_USER_DETAILS_MUTATION,
-      { input }
+      { input },
+      true
     );
     return data.updateUserDetails;
   }

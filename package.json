@@ -24,6 +24,7 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@types/node": "^22.13.4",
     "@unocss/preset-attributify": "^65.4.3",
     "@unocss/preset-typography": "^65.4.3",
     "@unocss/preset-uno": "^65.4.3",
