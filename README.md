@@ -11,7 +11,7 @@
 
 *A modern e-commerce platform for handcrafted crochet products* 🧸
 
-[Live Demo](https://crochebyamisha.com) | [Report Bug](https://github.com/yourusername/croche-by-amisha/issues) | [Request Feature](https://github.com/yourusername/croche-by-amisha/issues)
+[Live Demo](https://croche-frontend-eta.vercel.app) | [Report Bug](https://github.com/Manav108-hub/Croche-frontend/issues) | [Request Feature](https://github.com/Manav108-hub/Croche-frontend/issues)
 
 </div>
 
@@ -38,8 +38,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/croche-by-amisha.git
-   cd croche-by-amisha
+   git clone https://github.com/Manav108-hub/Croche-frontend.git
+   cd Croche-frontend
    ```
 
 2. **Install dependencies**
@@ -138,5 +138,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ---
 
 <div align="center">
-Made with ❤️ by <a href="https://github.com/yourusername">Amisha</a>
+Made with ❤️ by <a href="https://github.com/sinhaparth5">P4rth</a>
 </div>
