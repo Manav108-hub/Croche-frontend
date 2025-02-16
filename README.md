@@ -8,12 +8,25 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Lines of code](https://img.shields.io/tokei/lines/github/sinhaparth5/Croche-frontend)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sinhaparth5/Croche-frontend)
+![GitHub top language](https://img.shields.io/github/languages/top/sinhaparth5/Croche-frontend)
 
 *A modern e-commerce platform for handcrafted crochet products* 🧸
 
 [Live Demo](https://croche-frontend-eta.vercel.app) | [Report Bug](https://github.com/Manav108-hub/Croche-frontend/issues) | [Request Feature](https://github.com/Manav108-hub/Croche-frontend/issues)
 
 </div>
+
+## 🔄 CI/CD Status
+
+| Pipeline | Status |
+|----------|--------|
+| Code Quality | ![Code Quality Check](https://github.com/sinhaparth5/Croche-frontend/actions/workflows/code-quality.yml/badge.svg) |
+| Type Check | ![Type Check](https://github.com/sinhaparth5/Croche-frontend/actions/workflows/type-check.yml/badge.svg) |
+| Lint | ![Lint](https://github.com/sinhaparth5/Croche-frontend/actions/workflows/lint.yml/badge.svg) |
+
+[View All Workflows](https://github.com/sinhaparth5/Croche-frontend/actions)
 
 ## ✨ Features
 
