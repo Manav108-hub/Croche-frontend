@@ -134,7 +134,7 @@ const UPDATE_USER_DETAILS_MUTATION = `
 
 async function graphqlRequest<T>(
   query: string, 
-  variables: Record<string, any>, 
+  variables: Record<string, unknown>, 
   requireAuth: boolean = false
 ): Promise<T> {
   const headers: HeadersInit = {

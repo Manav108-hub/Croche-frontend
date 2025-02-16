@@ -119,7 +119,7 @@ export const ContactSection: React.FC = () => {
           >
             Have questions or need help?
             <br />
-            <span className="text-pink-500">We'd love to hear from you!</span>
+            <span className="text-pink-500">We&apos;d love to hear from you!</span>
           </motion.p>
 
           <motion.div
