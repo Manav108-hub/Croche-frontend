@@ -127,7 +127,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 👥 Team
 
-- **Amisha** - *Creator & Developer* - [GitHub Profile](https://github.com/yourusername)
+- **Manav** - *Creator & Developer* - [GitHub Profile](https://github.com/Manav108-hub)
+- **Parth** - *Creator & Developer* - [GitHub Profile](https://github.com/sinhaparth5)
 
 ## 🙏 Acknowledgments
 
