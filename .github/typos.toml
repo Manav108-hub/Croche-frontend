@@ -1,0 +1,18 @@
+[default]
+extend-ignore-re = [
+    "\\b[A-Z{2,}\\b",
+]
+
+[files]
+extend-exclude = [
+    "pnpm-lock.yaml",
+    "node_modules/**",
+    ".pnpm-store/**",
+    "dist/**",
+    ".next/**",
+    ".astro/**",
+    "build/**",
+    "public/**",
+    "package.json",
+    "tsconfig.json"
+]
