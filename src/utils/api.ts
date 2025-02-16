@@ -97,6 +97,27 @@ const GET_USER_QUERY = `
   }
 `;
 
+const GET_USER_BY_ID_QUERY = `
+  query UserById($userId: String!) {
+    userById(id: $userId) {
+      id
+      name
+      email
+      isAdmin
+      createdAt
+      updatedAt
+      userDetails {
+        id
+        address
+        city
+        pincode
+        country
+        phone
+      }
+    }
+  }
+`;
+
 const UPDATE_USER_DETAILS_MUTATION = `
   mutation UpdateUserDetails($input: UpdateUserDetailsInput!) {
     updateUserDetails(input: $input) {
@@ -110,29 +131,19 @@ const UPDATE_USER_DETAILS_MUTATION = `
   }
 `;
 
-
-async function graphqlRequest<T>(query: string, variables: Record<string, any>, requireAuth: boolean = false): Promise<T> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'apollo-require-preflight': 'true'
-  };
-
-  if (requireAuth) {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-  }
-
+async function graphqlRequest<T>(query: string, variables: Record<string, any>): Promise<T> {
   const response = await fetch(GRAPHQL_URL, {
     method: 'POST',
-    headers,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'apollo-require-preflight': 'true'
+    },
+    credentials: 'include', // Always include credentials
     body: JSON.stringify({
       query,
       variables,
     }),
-    credentials: 'include',
   });
 
   const data = await response.json();
@@ -166,8 +177,7 @@ export const authApi = {
   async getProducts(): Promise<Product[]> {
     const data = await graphqlRequest<{ products: Product[] }>(
       GET_PRODUCTS_QUERY,
-      {},
-      false
+      {}
     );
     return data.products;
   },
@@ -175,28 +185,33 @@ export const authApi = {
   async getProduct(id: string): Promise<Product> {
     const data = await graphqlRequest<{ product: Product }>(
       GET_PRODUCT_QUERY,
-      { id },
-      false
+      { id }
     );
     return data.product;
   },
 
-  // User
+  // Users
   async getUserByEmail(email: string): Promise<User> {
     const data = await graphqlRequest<{ userByEmail: User }>(
       GET_USER_QUERY,
-      { email },
-      true
+      { email }
     );
     return data.userByEmail;
+  },
+
+  async getUserById(userId: string): Promise<User> {
+    const data = await graphqlRequest<{ userById: User }>(
+      GET_USER_BY_ID_QUERY,
+      { userId }
+    );
+    return data.userById;
   },
 
   async updateUserDetails(input: UpdateUserDetails): Promise<UpdateUserDetails> {
     const data = await graphqlRequest<{ updateUserDetails: UpdateUserDetails }>(
       UPDATE_USER_DETAILS_MUTATION,
-      { input },
-      true
+      { input }
     );
     return data.updateUserDetails;
   }
-}
+};

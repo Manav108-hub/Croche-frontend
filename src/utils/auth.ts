@@ -1,51 +1,59 @@
-import type { User } from "../types/auth";
+import Cookies from 'js-cookie';
+import type { User } from '../types/auth';
+
+const TOKEN_NAME = 'auth_token';
+const USER_DATA = 'user_data';
 
 export const auth = {
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('authToken');
+    return Cookies.get(TOKEN_NAME) || null;
   },
 
   getUser(): User | null {
-    if (typeof window === 'undefined') return null;
-    const userData = localStorage.getItem('user');
+    const userData = Cookies.get(USER_DATA);
     return userData ? JSON.parse(userData) : null;
   },
 
   login(token: string, user: User): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    // Set secure httpOnly cookies via backend
+    // Frontend only stores minimal user data
+    Cookies.set(USER_DATA, JSON.stringify({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin
+    }), {
+      secure: true,
+      sameSite: 'strict',
+      expires: 7,
+      path: '/'
+    });
+
     window.dispatchEvent(new Event('authChange'));
   },
 
   logout(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    Cookies.remove(TOKEN_NAME, { path: '/' });
+    Cookies.remove(USER_DATA, { path: '/' });
     window.dispatchEvent(new Event('authChange'));
+    window.location.href = '/login';
   },
 
   isAuthenticated(): boolean {
-    if (typeof window === 'undefined') return false;
-    const token = this.getToken();
-    if (!token) return false;
-
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.exp * 1000 > Date.now();
-    } catch {
-      return false;
-    }
+    return !!this.getUser();
   },
 
-  updateUser(updatedUser: User): void {
-    if (typeof window === "undefined") return;
+  updateUser(updatedUser: Partial<User>): void {
     const currentUser = this.getUser();
     if (currentUser) {
       const newUser = { ...currentUser, ...updatedUser };
-      localStorage.setItem("user", JSON.stringify(newUser));
-      window.dispatchEvent(new Event("auth-change"));
+      Cookies.set(USER_DATA, JSON.stringify(newUser), {
+        secure: true,
+        sameSite: 'strict',
+        expires: 7,
+        path: '/'
+      });
+      window.dispatchEvent(new Event('authChange'));
     }
   },
-}
+};

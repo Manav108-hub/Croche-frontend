@@ -4,10 +4,10 @@ import { auth } from "../../utils/auth";
 import type { User, UpdateUserDetails } from "../../types/user";
 
 interface ProfileProps {
-  email: string;
+  userId: string;
 }
 
-export default function Profile({ email }: ProfileProps) {
+export default function UserProfile({ userId }: ProfileProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,8 +22,10 @@ export default function Profile({ email }: ProfileProps) {
 
   useEffect(() => {
     async function fetchUser() {
+      if(!userId) return;
+      
       try {
-        const userData = await authApi.getUserByEmail(email);
+        const userData = await authApi.getUserById(userId);
         setUser(userData);
         if (userData.userDetails) {
           setFormData(userData.userDetails);
@@ -36,7 +38,7 @@ export default function Profile({ email }: ProfileProps) {
     }
 
     fetchUser();
-  }, [email]);
+  }, [userId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,10 +55,10 @@ export default function Profile({ email }: ProfileProps) {
       await authApi.updateUserDetails(formData);
 
       // Fetch updated user data
-      const updatedUser = await authApi.getUserByEmail(email);
+      const updatedUser = await authApi.getUserById(userId);
       setUser(updatedUser);
 
-      // Update user information in localStorage
+      // Update user information in auth context
       auth.updateUser(updatedUser);
 
       // Exit edit mode
