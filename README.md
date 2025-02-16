@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![Croche By Amisha Logo](public/og-image.png)
+![Croche By Amisha Logo](public/ameesha-logo.png)
 
-[![Built with Astro](https://astro.badgen.net/badge/built%20with/Astro/blue)](https://astro.build)
+[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
