@@ -94,7 +94,7 @@ export const FeaturesSection: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto relative mt-16 py-8 px-4 overflow-hidden" // Add overflow-hidden to prevent 2D scroll
+      className="container mx-auto relative mt-2 pb-8 px-4 overflow-hidden" // Add overflow-hidden to prevent 2D scroll
     >
       {/* Features grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
