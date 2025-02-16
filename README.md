@@ -23,8 +23,6 @@
 | Pipeline | Status |
 |----------|--------|
 | Code Quality | ![Code Quality Check](https://github.com/sinhaparth5/Croche-frontend/actions/workflows/code-quality.yml/badge.svg) |
-| Type Check | ![Type Check](https://github.com/sinhaparth5/Croche-frontend/actions/workflows/type-check.yml/badge.svg) |
-| Lint | ![Lint](https://github.com/sinhaparth5/Croche-frontend/actions/workflows/lint.yml/badge.svg) |
 
 [View All Workflows](https://github.com/sinhaparth5/Croche-frontend/actions)
 
