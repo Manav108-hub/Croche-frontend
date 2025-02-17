@@ -94,7 +94,7 @@ export const FeaturesSection: React.FC = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto relative mt-16 py-8 px-4 overflow-hidden" // Add overflow-hidden to prevent 2D scroll
+      className="container mx-auto relative mt-2 pb-8 px-4 overflow-hidden" // Add overflow-hidden to prevent 2D scroll
     >
       {/* Features grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -105,7 +105,7 @@ export const FeaturesSection: React.FC = () => {
             className="relative bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-xl text-center transform hover:scale-105 transition-transform duration-300 overflow-hidden" // Add overflow-hidden to prevent 2D scroll
           >
             <span className="text-3xl mb-4 block">{feature.icon}</span>
-            <h3 className="text-2xl chewy-regular text-pink-500 mb-3">
+            <h3 className="text-2xl pacifico-regular text-pink-500 mb-3">
               {feature.title}
             </h3>
             <p className="text-gray-600 dm-sans-regular">

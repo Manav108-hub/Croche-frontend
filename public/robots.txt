@@ -1,0 +1,47 @@
+# Global rules for all web crawlers
+User-agent: *
+Allow: /
+Allow: /shop/
+Allow: /products/
+Allow: /blog/
+Allow: /about/
+Allow: /contact/
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /dev/
+Disallow: /draft/
+Disallow: /preview/
+Disallow: /*.json$
+Disallow: /*?*
+
+# Specific rules for various bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 5
+
+User-agent: Googlebot-Image
+Allow: /images/
+Allow: /products/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.gif$
+Allow: /*.png$
+Allow: /*.webp$
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 10
+
+# Block specific bots
+User-agent: BadBot
+Disallow: /
+
+# Sitemaps
+Sitemap: https://yourwebsite.com/sitemap.xml
+Sitemap: https://yourwebsite.com/shop-sitemap.xml
+
+# Host
+Host: https://yourwebsite.com

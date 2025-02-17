@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "../ui/Icons";
 import { motion, AnimatePresence } from "framer-motion";
+import { auth } from '../../utils/auth';
 
 interface DecorativeProps {
   top: string;
@@ -38,6 +39,7 @@ type UserData = {
   name: string;
   id: string;
   email: string;
+  isAdmin: boolean;
 };
 
 const Navbar = () => {
@@ -68,18 +70,13 @@ const Navbar = () => {
   useEffect(() => {
     const checkAuthStatus = () => {
       try {
-        // Only access localStorage when window is defined
-        if (typeof window !== "undefined") {
-          const token = localStorage.getItem("authToken");
-          const userStr = localStorage.getItem("user");
-          if (token && userStr) {
-            const user = JSON.parse(userStr);
-            setIsLoggedIn(true);
-            setUserData(user);
-          } else {
-            setIsLoggedIn(false);
-            setUserData(null);
-          }
+        const user = auth.getUser();
+        if (user) {
+          setIsLoggedIn(true);
+          setUserData(user);
+        } else {
+          setIsLoggedIn(false);
+          setUserData(null);
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
@@ -88,24 +85,17 @@ const Navbar = () => {
       }
     };
 
-    // Only add event listener on client side
-    if (typeof window !== "undefined") {
-      checkAuthStatus();
-      window.addEventListener("auth-change", checkAuthStatus);
-      return () => {
-        window.removeEventListener("auth-change", checkAuthStatus);
-      };
-    }
+    // Check auth status immediately and set up listener
+    checkAuthStatus();
+    window.addEventListener("authChange", checkAuthStatus);
+    
+    return () => {
+      window.removeEventListener("authChange", checkAuthStatus);
+    };
   }, []);
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("user");
-      setIsLoggedIn(false);
-      setUserData(null);
-      window.location.href = "/";
-    }
+    auth.logout();
   };
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
@@ -189,7 +179,7 @@ const Navbar = () => {
               <>
                 <motion.a
                   whileHover={{ scale: 1.05 }}
-                  href={`/profile/${encodeURIComponent(userData.name.toLowerCase().replace(/\s+/g, '-'))}`}
+                  href={`/profile/${userData.id}`}
                   className="hidden sm:flex items-center text-gray-600 hover:text-pink-400 transition-colors"
                 >
                   <Icon name="user" className="h-5 w-5 mr-1" />
@@ -285,7 +275,7 @@ const Navbar = () => {
                     <>
                       <motion.a
                         whileHover={{ scale: 1.05, x: 10 }}
-                        href={`/profile/${encodeURIComponent(userData.name.toLowerCase().replace(/\s+/g, '-'))}`}
+                        href={`/profile/${userData.id}`}
                         className="block py-2 text-gray-600 hover:text-pink-400 transition-colors"
                       >
                         Profile
