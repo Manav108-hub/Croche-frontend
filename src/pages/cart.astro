@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { CartComponent } from '../components/auth/CartComponent';
+---
+
+<Layout title="Your Cart">
+  <main class="min-h-screen bg-gray-50 py-8">
+    <CartComponent client:load />
+  </main>
+</Layout>
