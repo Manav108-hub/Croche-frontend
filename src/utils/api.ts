@@ -334,11 +334,12 @@ export const authApi = {
     return data.updateUserDetails;
   },
 
-  async addToCart(productId: string, size: string, quantity: number): Promise<Cart> {
+  async addToCart(productId: string, userId: string, size: string, quantity: number): Promise<Cart> {
     const data = await graphqlRequest<{ addToCart: Cart }>(
       ADD_TO_CART_MUTATION,
       { 
         input: {
+          userId,
           productId,
           size,
           quantity

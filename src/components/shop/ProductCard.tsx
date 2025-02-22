@@ -5,41 +5,33 @@ import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icons';
 import { authApi } from '../../utils/api';
 import { auth } from '../../utils/auth';
-import { Toast} from '../ui/Toast';
-import type{ ToastType } from '../ui/Toast';
+import { showToast } from '../ui/Toast';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const [selectedSize, setSelectedSize] = useState<string>('');
   const [isAdding, setIsAdding] = useState(false);
-  const [toastMessage, setToastMessage] = useState<{ type: ToastType; message: string } | null>(null);
-
   const minPrice = Math.min(...product.prices.map(p => p.value));
   const mainImage = product.images[0]?.url;
 
-  const handleAddToCart = async () => {
-    if (!selectedSize) {
-      setToastMessage({ type: 'warning', message: 'Please select a size first' });
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    const user = auth.getUser();
+    if (!user?.id) {
+      showToast({ type: 'error', message: 'Please login to add items to cart' });
       return;
     }
 
     try {
       setIsAdding(true);
-      const user = auth.getUser();
-      
-      if (!user?.id) {
-        setToastMessage({ type: 'error', message: 'Please login to add items to cart' });
-        return;
-      }
-
-      await authApi.addToCart(product.id, selectedSize, 1);
-      setToastMessage({ type: 'success', message: 'Added to cart successfully!' });
+      await authApi.addToCart(product.id, user.id, "small", 1);
+      showToast({ type: 'success', message: `${product.name} added to cart!` });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to add to cart';
-      setToastMessage({ type: 'error', message });
+      showToast({ type: 'error', message });
     } finally {
       setIsAdding(false);
     }
@@ -63,24 +55,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </h3>
           
           <div className="flex justify-between items-center gap-2">
-            <div className="flex flex-wrap gap-1">
-              {product.prices.map((price, index) => (
-                <button
-                  key={`${product.id}-${price.size}-${index}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSelectedSize(price.size);
-                  }}
-                  className={`px-2 py-1 text-sm rounded-md transition-colors ${
-                    selectedSize === price.size
-                      ? 'bg-pink-100 text-pink-700 border-pink-300'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-                >
-                  {price.size}
-                </button>
-              ))}
-            </div>
+            <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+              Size: Small
+            </span>
             <span className="font-bold whitespace-nowrap">
               ₹{minPrice}
             </span>
@@ -90,11 +67,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       
       <Button 
         variant="primary"
-        onClick={(e) => {
-          e.preventDefault();
-          handleAddToCart();
-        }}
-        disabled={isAdding || !selectedSize}
+        onClick={handleAddToCart}
+        disabled={isAdding}
         className="w-full rounded-none flex items-center justify-center gap-2 pacifico-regular"
       >
         {isAdding ? (
@@ -106,14 +80,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </>
         )}
       </Button>
-
-      {toastMessage && (
-        <Toast
-          type={toastMessage.type}
-          message={toastMessage.message}
-          onClose={() => setToastMessage(null)}
-        />
-      )}
     </Card>
   );
 };

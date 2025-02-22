@@ -104,7 +104,7 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="bg-white/95 backdrop-blur-sm shadow-md fixed w-full top-0 z-50"
+      className="bg-white/95 backdrop-blur-sm shadow-md fixed w-full top-0 z-40"
     >
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Decorative Flowers */}
