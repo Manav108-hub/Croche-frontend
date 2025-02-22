@@ -9,8 +9,8 @@
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Lines of code](https://img.shields.io/tokei/lines/github/Manav108-hub/Croche-frontend)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/sinhaparth5/Croche-frontend)
-![GitHub top language](https://img.shields.io/github/languages/top/sinhaparth5/Croche-frontend)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Manav108-hub/Croche-frontend)
+![GitHub top language](https://img.shields.io/github/languages/top/Manav108-hub/Croche-frontend)
 
 *A modern e-commerce platform for handcrafted crochet products* 🧸
 
