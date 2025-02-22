@@ -19,5 +19,6 @@ extend-exclude = [
     "build/**",
     "public/**",
     "package.json",
-    "tsconfig.json"
+    "tsconfig.json",
+    "README.md"
 ]
