@@ -2,7 +2,7 @@
 import React from "react";
 import { LayoutGrid } from "../ui/layout-grid";
 
-export function PorfolioSection() {
+export function PortfolioSection() {
     return (
         <div className="h-screen py-20 w-full">
             <div className="container flex mx-auto flex flex-col items-center justify-center space-y-2 mb-8">
