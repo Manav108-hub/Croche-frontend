@@ -1,7 +1,9 @@
 import type { LoginInput, RegisterInput, AuthResponse } from "../types/auth";
+import type { Cart } from "../types/cart";
 import type { Product } from "../types/product";
 import type { User, UpdateUserDetails } from "../types/user";
 import Cookies from 'js-cookie';
+import { auth } from "./auth";
 
 const GRAPHQL_URL = 'https://croche-backend-production.up.railway.app/graphql';
 
@@ -131,6 +133,101 @@ const UPDATE_USER_DETAILS_MUTATION = `
     }
   }
 `;
+const GET_CART_QUERY = `
+  query GetCart($userId: String!) {
+    getCart(userId: $userId) {
+      id
+      items {
+        id
+        quantity
+        size
+        product {
+          id
+          name
+          prices {
+            size
+            value
+          }
+          images {
+            id
+            url
+          }
+        }
+      }
+      total
+    }
+  }
+`;
+
+const ADD_TO_CART_MUTATION = `
+  mutation AddToCart($input: AddToCartInput!) {
+    addToCart(input: $input) {
+      id
+      userId
+      items {
+        id
+        quantity
+        size
+        product {
+          id
+          name
+          prices {
+            size
+            value
+          }
+        }
+      }
+      total
+    }
+  }
+`;
+
+// Add these mutation constants
+const UPDATE_CART_ITEM_MUTATION = `
+  mutation UpdateCartItem($userId: String!, $input: UpdateCartItemInput!) {
+    updateCartItem(userId: $userId, input: $input) {
+      id
+      userId
+      items {
+        id
+        quantity
+        size
+        product {
+          id
+          name
+          prices {
+            size
+            value
+          }
+        }
+      }
+      total
+    }
+  }
+`;
+
+const REMOVE_CART_ITEM_MUTATION = `
+  mutation RemoveCartItem($userId: String!, $cartItemId: String!) {
+    removeCartItem(userId: $userId, cartItemId: $cartItemId) {
+      id
+      userId
+      items {
+        id
+        quantity
+        size
+        product {
+          id
+          name
+          prices {
+            size
+            value
+          }
+        }
+      }
+      total
+    }
+  }
+`;
 
 async function graphqlRequest<T>(
   query: string, 
@@ -235,5 +332,62 @@ export const authApi = {
       true
     );
     return data.updateUserDetails;
+  },
+
+  async addToCart(productId: string, size: string, quantity: number): Promise<Cart> {
+    const data = await graphqlRequest<{ addToCart: Cart }>(
+      ADD_TO_CART_MUTATION,
+      { 
+        input: {
+          productId,
+          size,
+          quantity
+        }
+      },
+      true
+    );
+    return data.addToCart;
+  },
+
+  async updateCartItem(itemId: string, quantity: number): Promise<Cart> {
+    const user = auth.getUser();
+    if (!user?.id) throw new Error('User not authenticated');
+
+    const data = await graphqlRequest<{ updateCartItem: Cart }>(
+      UPDATE_CART_ITEM_MUTATION,
+      { 
+        userId: user.id,
+        input: {
+          cartItemId: itemId,
+          quantity
+        }
+      },
+      true
+    );
+    return data.updateCartItem;
+  },
+
+  async removeCartItem(itemId: string): Promise<Cart> {
+    const user = auth.getUser();
+    if (!user?.id) throw new Error('User not authenticated');
+
+    const data = await graphqlRequest<{ removeCartItem: Cart }>(
+      REMOVE_CART_ITEM_MUTATION,
+      { 
+        userId: user.id,
+        cartItemId: itemId
+      },
+      true
+    );
+    return data.removeCartItem;
+  },
+
+  async getCart(userId: string): Promise<Cart> {
+    const data = await graphqlRequest<{ getCart: Cart }>(
+      GET_CART_QUERY,
+      { userId },
+      true
+    );
+    return data.getCart;
   }
 };
