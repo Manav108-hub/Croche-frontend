@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import type { Product } from '../../types/product';
-import { Card } from '../ui/Card';
-import { Button } from '../ui/Button';
-import { Icon } from '../ui/Icons';
-import { authApi } from '../../utils/api';
-import { auth } from '../../utils/auth';
-import { showToast } from '../ui/Toast';
+import { useState } from "react";
+import type { Product } from "../../types/product";
+import { authApi } from "../../utils/api";
+import { auth } from "../../utils/auth";
+import { Button } from "../ui/Button";
+import { Card } from "../ui/Card";
+import { Icon } from "../ui/Icons";
+import { showToast } from "../ui/Toast";
 
+// Add the interface definition
 interface ProductCardProps {
   product: Product;
 }
@@ -15,6 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [isAdding, setIsAdding] = useState(false);
   const minPrice = Math.min(...product.prices.map(p => p.value));
   const mainImage = product.images[0]?.url;
+  const availableSizes = product.prices.map(p => p.size.toUpperCase());
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -55,9 +57,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </h3>
           
           <div className="flex justify-between items-center gap-2">
-            <span className="text-sm bg-gray-100 px-2 py-1 rounded">
-              Size: Small
-            </span>
+            <div className="flex gap-1 flex-wrap">
+              <span className="text-sm bg-gray-100 px-2 py-1 rounded">
+                Sizes: {availableSizes.join(', ')}
+              </span>
+            </div>
             <span className="font-bold whitespace-nowrap">
               ₹{minPrice}
             </span>
