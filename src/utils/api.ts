@@ -5,7 +5,7 @@ import type { User, UpdateUserDetails } from "../types/user";
 import Cookies from 'js-cookie';
 import { auth } from "./auth";
 
-const GRAPHQL_URL = 'https://croche-backend-production.up.railway.app/graphql';
+const GRAPHQL_URL = 'https://croche-backend-production-64d2.up.railway.app/graphql';
 
 const LOGIN_MUTATION = `
   mutation Login($input: LoginInput!) {
