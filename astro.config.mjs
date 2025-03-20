@@ -39,15 +39,4 @@ export default defineConfig({
   adapter: vercel(),
   output: 'server',
   site: 'https://croche-frontend-eta.vercel.app',
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          entryFileNames: '_astro/[hash].js',
-          chunkFileNames: '_astro/[hash].js',
-          assetFileNames: '_astro/[hash][extname]',
-        },
-      },
-    },
-  },
 });
