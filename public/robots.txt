@@ -40,8 +40,8 @@ User-agent: BadBot
 Disallow: /
 
 # Sitemaps
-Sitemap: https://yourwebsite.com/sitemap.xml
-Sitemap: https://yourwebsite.com/shop-sitemap.xml
+Sitemap: https://croche-frontend-eta.vercel.app/sitemap-0.xml
+Sitemap: https://croche-frontend-eta.vercel.app/sitemap-index.xml
 
 # Host
 Host: https://yourwebsite.com
