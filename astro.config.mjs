@@ -16,15 +16,4 @@ export default defineConfig({
   },
   adapter: vercel(),
   output: 'server',
-  vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          entryFileNames: '[hash].js',
-          chunkFileNames: '[hash].js',
-          assetFileNames: '[hash][extname]',
-        },
-      },
-    },
-  },
 });
